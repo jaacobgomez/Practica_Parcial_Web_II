@@ -1,5 +1,6 @@
 import express from "express";
 import errorHandler from "./middleware/error-handler.js";
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -15,6 +16,14 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.post("/test-body", (req, res) => {
+  res.json({
+    body: req.body,
+  });
+});
+
+app.use("/api/user", userRoutes);
 
 app.use((req, res) => {
   res.status(404).json({

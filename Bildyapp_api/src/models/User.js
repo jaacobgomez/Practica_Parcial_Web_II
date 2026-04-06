@@ -16,7 +16,6 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       lowercase: true,
     },
@@ -45,13 +44,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["admin", "guest"],
       default: "admin",
-      index: true,
     },
     status: {
       type: String,
       enum: ["pending", "verified"],
       default: "pending",
-      index: true,
     },
     verificationCode: {
       type: String,
@@ -65,7 +62,6 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Company",
       default: null,
-      index: true,
     },
     address: {
       type: addressSchema,
