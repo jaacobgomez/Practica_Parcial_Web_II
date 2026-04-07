@@ -124,10 +124,3 @@ Content-Type: image/png
 ### Current user after logo
 GET {{baseUrl}}/api/user HTTP/1.1
 Authorization: Bearer {{token}}
-
-### Login - refresh - password - logout - login - delete
-
-### accessToken 1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZDUxNjcxMzFkMjJhNzZjMDNiNDI4NCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NTU3MjY4NywiZXhwIjoxNzc1NTczNTg3fQ.3MNip_HdBcKUfaTPBFnCt5cdPiWBLOqjrNViebN_F5E
-### refreshToken 1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZDUxNjcxMzFkMjJhNzZjMDNiNDI4NCIsImlhdCI6MTc3NTU3MjY4NywiZXhwIjoxNzc2MTc3NDg3fQ.-F_9wBzT0qMQ6n_UEuf_Z8fwLZLNzs8MqR7RBmcdhyA
-### accessToken nuevo: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZDUxNjcxMzFkMjJhNzZjMDNiNDI4NCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NTU3Mjc2OCwiZXhwIjoxNzc1NTczNjY4fQ.BHuNYtceq8VkTgA8VcISlYlH8g1N9pZFQq6zrNfnZzE
-
