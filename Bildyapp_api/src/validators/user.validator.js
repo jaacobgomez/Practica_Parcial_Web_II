@@ -66,3 +66,32 @@ export const companySchema = z.object({
     }
   ),
 });
+
+export const refreshTokenSchema = z.object({
+  body: z.object({
+    refreshToken: z.string().min(1, "El refresh token es obligatorio"),
+  }),
+});
+
+export const passwordSchemaValidator = z.object({
+  body: z
+    .object({
+      currentPassword: z
+        .string()
+        .min(8, "La contraseña actual debe tener al menos 8 caracteres"),
+      newPassword: z
+        .string()
+        .min(8, "La nueva contraseña debe tener al menos 8 caracteres"),
+    })
+    .refine((data) => data.currentPassword !== data.newPassword, {
+      message: "La nueva contraseña debe ser distinta de la actual",
+      path: ["newPassword"],
+    }),
+});
+
+export const inviteUserSchema = z.object({
+  body: z.object({
+    email: emailSchema,
+    password: passwordSchema,
+  }),
+});
