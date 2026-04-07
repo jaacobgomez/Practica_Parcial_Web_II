@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZDUzMGYxMzg5YzEzODdmOTMwM2RhMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NTU3OTYzMiwiZXhwIjoxNzc1NTgwNTMyfQ.sML6IPIBeQdYS91IJtK2k1KJJN810F6-Brj9N9MyA-k
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZDUzMGYxMzg5YzEzODdmOTMwM2RhMSIsImlhdCI6MTc3NTU3OTQ0NywiZXhwIjoxNzc2MTg0MjQ3fQ.qx5-OjCJ91C4xEuE1LSDpX1pRi97PWGbNNWtZybSPno
+@token = accessToken_aqui
+@refreshToken = refreshToken_Aqui
 
 ### Register
 POST {{baseUrl}}/api/user/register HTTP/1.1
