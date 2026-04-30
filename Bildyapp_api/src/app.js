@@ -21,6 +21,7 @@ app.use(helmet());
 app.use(limiter);
 app.use(express.json());
 //app.use(mongoSanitize({replaceWith: "_"}));
+//Desactivado por conflicto con la versión actual de Express 
 app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {
