@@ -5,6 +5,7 @@ import mongoSanitize from "express-mongo-sanitize";
 import errorHandler from "./middleware/error-handler.js";
 import userRoutes from "./routes/user.routes.js";
 import clientRoutes from "./routes/client.routes.js";
+import projectRoutes from "./routes/project.routes.js";
 
 const app = express();
 
@@ -24,8 +25,10 @@ app.use(express.json());
 //app.use(mongoSanitize({replaceWith: "_"}));
 //Desactivado por conflicto con la versión actual de Express 
 app.use("/uploads", express.static("uploads"));
-// Monto la ruta de los clientes
+// Monto la ruta para el uso de clientes
 app.use("/api/client", clientRoutes);
+// Monto la ruta para el uso de proyectos
+app.use("/api/project", projectRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "BildyApp API running" });

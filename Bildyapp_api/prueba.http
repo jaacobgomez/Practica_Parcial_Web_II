@@ -1,7 +1,9 @@
 @baseUrl = http://localhost:3000
-@token = accessToken_aqui
-@refreshToken = refreshToken_Aqui
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjRmNjAxNzZmMDhlYzEwYTAyZjI0MyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NzY2MTYxMSwiZXhwIjoxNzc3NjYyNTExfQ.MlMlyazLdzFjV69ercg1KOZxm8jXlsmjmbmyTM9jzro
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjRmNjAxNzZmMDhlYzEwYTAyZjI0MyIsImlhdCI6MTc3NzY2MTYxMSwiZXhwIjoxNzc4MjY2NDExfQ.EfYS479rWhShlgdoJiYRcWvcwDtNPlQ1ay6mc9VfaLU
+@clientId = 69f4f6f976f08ec10a02f245
 
+@projectId = 69f4f73176f08ec10a02f246
 ### Register
 POST {{baseUrl}}/api/user/register HTTP/1.1
 Content-Type: application/json
@@ -17,7 +19,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "code": "274558"
+  "code": "312596"
 }
 
 ### Login
@@ -123,4 +125,123 @@ Content-Type: image/png
 
 ### Current user after logo
 GET {{baseUrl}}/api/user HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Create client
+POST {{baseUrl}}/api/client HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Cliente Demo",
+  "cif": "B11111111",
+  "email": "cliente@demo.com",
+  "phone": "600123123",
+  "address": {
+    "street": "Calle Cliente",
+    "number": "12",
+    "postal": "28010",
+    "city": "Madrid",
+    "province": "Madrid"
+  }
+}
+
+### List clients
+GET {{baseUrl}}/api/client?page=1&limit=10&name=Cliente&sort=-createdAt HTTP/1.1
+Authorization: Bearer {{token}}
+
+### List clients filter by name
+GET {{baseUrl}}/api/client?page=1&limit=10&name=Demo HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Get client by id
+GET {{baseUrl}}/api/client/{{clientId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Update client
+PUT {{baseUrl}}/api/client/{{clientId}} HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "phone": "699999999"
+}
+
+### Soft delete client
+DELETE {{baseUrl}}/api/client/{{clientId}}?soft=true HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Archived clients
+GET {{baseUrl}}/api/client/archived HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Restore client
+PATCH {{baseUrl}}/api/client/{{clientId}}/restore HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Hard delete client
+DELETE {{baseUrl}}/api/client/{{clientId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Get client after hard delete
+GET {{baseUrl}}/api/client/{{clientId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Create project
+POST {{baseUrl}}/api/project HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "client": "{{clientId}}",
+  "name": "Reforma Cocina",
+  "projectCode": "PRJ-001",
+  "address": {
+    "street": "Calle Obra",
+    "number": "7",
+    "postal": "28020",
+    "city": "Madrid",
+    "province": "Madrid"
+  },
+  "email": "obra@demo.com",
+  "notes": "Proyecto inicial",
+  "active": true
+}
+
+### List projects
+GET {{baseUrl}}/api/project?page=1&limit=10&name=Reforma&sort=-createdAt HTTP/1.1
+Authorization: Bearer {{token}}
+
+### List projects by client
+GET {{baseUrl}}/api/project?page=1&limit=10&client={{clientId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Get project by id
+GET {{baseUrl}}/api/project/{{projectId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Update project
+PUT {{baseUrl}}/api/project/{{projectId}} HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "notes": "Proyecto actualizado",
+  "active": false
+}
+
+### Soft delete project
+DELETE {{baseUrl}}/api/project/{{projectId}}?soft=true HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Archived projects
+GET {{baseUrl}}/api/project/archived HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Restore project
+PATCH {{baseUrl}}/api/project/{{projectId}}/restore HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Hard delete project
+DELETE {{baseUrl}}/api/project/{{projectId}} HTTP/1.1
 Authorization: Bearer {{token}}
