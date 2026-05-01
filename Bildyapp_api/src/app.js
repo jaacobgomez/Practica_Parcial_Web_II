@@ -6,6 +6,7 @@ import errorHandler from "./middleware/error-handler.js";
 import userRoutes from "./routes/user.routes.js";
 import clientRoutes from "./routes/client.routes.js";
 import projectRoutes from "./routes/project.routes.js";
+import deliveryNoteRoutes from "./routes/deliverynote.routes.js";
 
 const app = express();
 
@@ -29,6 +30,8 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/client", clientRoutes);
 // Monto la ruta para el uso de proyectos
 app.use("/api/project", projectRoutes);
+// Monto la ruta para el uso de albaranes
+app.use("/api/deliverynote", deliveryNoteRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "BildyApp API running" });

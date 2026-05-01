@@ -1,9 +1,13 @@
 @baseUrl = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjRmNjAxNzZmMDhlYzEwYTAyZjI0MyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NzY2MTYxMSwiZXhwIjoxNzc3NjYyNTExfQ.MlMlyazLdzFjV69ercg1KOZxm8jXlsmjmbmyTM9jzro
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjRmNjAxNzZmMDhlYzEwYTAyZjI0MyIsImlhdCI6MTc3NzY2MTYxMSwiZXhwIjoxNzc4MjY2NDExfQ.EfYS479rWhShlgdoJiYRcWvcwDtNPlQ1ay6mc9VfaLU
-@clientId = 69f4f6f976f08ec10a02f245
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjUwMzU2ZWU3NGZlMjcwNWMwNWNlMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NzY2NDkzMiwiZXhwIjoxNzc3NjY1ODMyfQ.wKfHtkQ2yzk-pAOO5fprJsrwx6DvD9VClv3JGRG7TUk
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjUwMzU2ZWU3NGZlMjcwNWMwNWNlMSIsImlhdCI6MTc3NzY2NDkzMiwiZXhwIjoxNzc4MjY5NzMyfQ.e4EvFmhVctqwcO8Q3wvupCOpw5wjcG4bub4BoN5VR3E
+@clientId = 69f5043fee74fe2705c05ce3
 
-@projectId = 69f4f73176f08ec10a02f246
+@projectId = 69f50462ee74fe2705c05ce4
+
+@albaranMaterialId = 69f50487ee74fe2705c05ce5
+
+@albaranHorasId = 69f504deee74fe2705c05ce6
 ### Register
 POST {{baseUrl}}/api/user/register HTTP/1.1
 Content-Type: application/json
@@ -19,7 +23,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "code": "312596"
+  "code": "767162"
 }
 
 ### Login
@@ -244,4 +248,68 @@ Authorization: Bearer {{token}}
 
 ### Hard delete project
 DELETE {{baseUrl}}/api/project/{{projectId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Create delivery note - material
+POST {{baseUrl}}/api/deliverynote HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "client": "{{clientId}}",
+  "project": "{{projectId}}",
+  "format": "material",
+  "description": "Entrega de materiales",
+  "workDate": "2026-05-10",
+  "material": "Cemento",
+  "quantity": 20,
+  "unit": "sacos"
+}
+
+### Create delivery note - hours
+POST {{baseUrl}}/api/deliverynote HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "client": "{{clientId}}",
+  "project": "{{projectId}}",
+  "format": "hours",
+  "description": "Jornada de trabajo",
+  "workDate": "2026-05-11",
+  "hours": 8,
+  "workers": [
+    {
+      "name": "Pedro",
+      "hours": 4
+    },
+    {
+      "name": "Luis",
+      "hours": 4
+    }
+  ]
+}
+
+### List delivery notes
+GET {{baseUrl}}/api/deliverynote?page=1&limit=10&sort=-workDate HTTP/1.1
+Authorization: Bearer {{token}}
+
+### List delivery notes by project
+GET {{baseUrl}}/api/deliverynote?page=1&limit=10&project={{projectId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### List delivery notes by client
+GET {{baseUrl}}/api/deliverynote?page=1&limit=10&client={{clientId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### List signed=false
+GET {{baseUrl}}/api/deliverynote?page=1&limit=10&signed=false HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Get delivery note by id
+GET {{baseUrl}}/api/deliverynote/{{albaranHorasId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Delete delivery note
+DELETE {{baseUrl}}/api/deliverynote/{{albaranMaterialId}} HTTP/1.1
 Authorization: Bearer {{token}}
