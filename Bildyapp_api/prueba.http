@@ -1,13 +1,12 @@
 @baseUrl = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjUwMzU2ZWU3NGZlMjcwNWMwNWNlMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NzY2NDkzMiwiZXhwIjoxNzc3NjY1ODMyfQ.wKfHtkQ2yzk-pAOO5fprJsrwx6DvD9VClv3JGRG7TUk
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjUwMzU2ZWU3NGZlMjcwNWMwNWNlMSIsImlhdCI6MTc3NzY2NDkzMiwiZXhwIjoxNzc4MjY5NzMyfQ.e4EvFmhVctqwcO8Q3wvupCOpw5wjcG4bub4BoN5VR3E
-@clientId = 69f5043fee74fe2705c05ce3
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjY0Yjc0YTMzZGM2YzNkNDBmOWZkNSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3Nzc1MDc1MCwiZXhwIjoxNzc3NzUxNjUwfQ.pDX7aL72B4IBFZhGd7dZUWiWfx1V68XV3ccaeViFlHI
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjY0Yjc0YTMzZGM2YzNkNDBmOWZkNSIsImlhdCI6MTc3Nzc1MDc1MCwiZXhwIjoxNzc4MzU1NTUwfQ.kLRIWwjIkFR86jBDXDl61CiYcOrYQv_M9tf_0RpRtIc
+@clientId = 69f64ceba33dc6c3d40f9fd7
 
-@projectId = 69f50462ee74fe2705c05ce4
+@projectId = 69f64e75a33dc6c3d40f9fd8
 
-@albaranMaterialId = 69f50487ee74fe2705c05ce5
+@albaranId = 69f64edfa33dc6c3d40f9fd9
 
-@albaranHorasId = 69f504deee74fe2705c05ce6
 ### Register
 POST {{baseUrl}}/api/user/register HTTP/1.1
 Content-Type: application/json
@@ -23,7 +22,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "code": "767162"
+  "code": "843142"
 }
 
 ### Login
@@ -307,9 +306,37 @@ GET {{baseUrl}}/api/deliverynote?page=1&limit=10&signed=false HTTP/1.1
 Authorization: Bearer {{token}}
 
 ### Get delivery note by id
-GET {{baseUrl}}/api/deliverynote/{{albaranHorasId}} HTTP/1.1
+GET {{baseUrl}}/api/deliverynote/{{albaranId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Get deliverynote before sign
+GET {{baseUrl}}/api/deliverynote/{{albaranId}} HTTP/1.1
 Authorization: Bearer {{token}}
 
 ### Delete delivery note
-DELETE {{baseUrl}}/api/deliverynote/{{albaranMaterialId}} HTTP/1.1
+DELETE {{baseUrl}}/api/deliverynote/{{albaranId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Sign delivery note
+PATCH {{baseUrl}}/api/deliverynote/{{albaranId}}/sign HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundarySign
+
+------WebKitFormBoundarySign
+Content-Disposition: form-data; name="signature"; filename="firma.jpg"
+Content-Type: image/jpeg
+
+< ./firma.jpg
+------WebKitFormBoundarySign--
+
+### Get delivery note after sign
+GET {{baseUrl}}/api/deliverynote/{{albaranId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Get PDF from the note
+GET {{baseUrl}}/api/deliverynote/pdf/{{albaranId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Delete signed delivery note --> Debería de fallara ya que no se puede borrar un albarán firmado
+DELETE {{baseUrl}}/api/deliverynote/{{albaranId}} HTTP/1.1
 Authorization: Bearer {{token}}

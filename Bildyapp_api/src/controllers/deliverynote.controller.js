@@ -2,6 +2,9 @@ import DeliveryNote from "../models/DeliveryNote.js";
 import Client from "../models/Client.js";
 import Project from "../models/Project.js";
 import AppError from "../utils/AppError.js";
+import PDFDocument from "pdfkit";
+import { PassThrough } from "node:stream";
+import cloudinaryService from "../services/cloudinary.service.js";
 
 export async function createDeliveryNote(req, res, next) {
   try {
@@ -200,6 +203,163 @@ export async function deleteDeliveryNote(req, res, next) {
     res.json({
       message: "Albarán eliminado correctamente",
     });
+  } catch (error) {
+    next(error);
+  }
+}
+
+function generateDeliveryNotePdfBuffer(deliveryNote) {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ margin: 50 });
+    const stream = new PassThrough();
+    const chunks = [];
+
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+    stream.on("error", reject);
+
+    doc.pipe(stream);
+
+    doc.fontSize(18).text("Albarán - BildyApp", { underline: true });
+    doc.moveDown();
+
+    doc.fontSize(12).text(`ID: ${deliveryNote._id}`);
+    doc.text(`Fecha de trabajo: ${new Date(deliveryNote.workDate).toLocaleDateString("es-ES")}`);
+    doc.text(`Formato: ${deliveryNote.format}`);
+    doc.text(`Descripción: ${deliveryNote.description || "-"}`);
+    doc.moveDown();
+
+    doc.text(`Usuario: ${deliveryNote.user?.fullName || deliveryNote.user?.email || "-"}`);
+    doc.text(`Cliente: ${deliveryNote.client?.name || "-"}`);
+    doc.text(`Proyecto: ${deliveryNote.project?.name || "-"}`);
+    doc.moveDown();
+
+    if (deliveryNote.format === "material") {
+      doc.text("Datos de material", { underline: true });
+      doc.text(`Material: ${deliveryNote.material || "-"}`);
+      doc.text(`Cantidad: ${deliveryNote.quantity ?? 0}`);
+      doc.text(`Unidad: ${deliveryNote.unit || "-"}`);
+    }
+
+    if (deliveryNote.format === "hours") {
+      doc.text("Datos de horas", { underline: true });
+      doc.text(`Horas totales: ${deliveryNote.hours ?? 0}`);
+      doc.moveDown();
+
+      if (deliveryNote.workers?.length) {
+        doc.text("Trabajadores:");
+        deliveryNote.workers.forEach((worker, index) => {
+          doc.text(`${index + 1}. ${worker.name} - ${worker.hours}h`);
+        });
+      }
+    }
+
+    doc.moveDown();
+    doc.text(`Firmado: ${deliveryNote.signed ? "Sí" : "No"}`);
+
+    if (deliveryNote.signed && deliveryNote.signedAt) {
+      doc.text(
+        `Fecha de firma: ${new Date(deliveryNote.signedAt).toLocaleString("es-ES")}`
+      );
+    }
+
+    if (deliveryNote.signatureUrl) {
+      doc.moveDown();
+      doc.text(`Firma: ${deliveryNote.signatureUrl}`);
+    }
+
+    doc.end();
+  });
+}
+
+export async function signDeliveryNote(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const deliveryNote = await DeliveryNote.findOne({
+      _id: id,
+      company: req.user.company,
+      deleted: false,
+    })
+      .populate("user", "email name lastName fullName")
+      .populate("client")
+      .populate("project");
+
+    if (!deliveryNote) {
+      return next(AppError.notFound("Albarán no encontrado"));
+    }
+
+    if (deliveryNote.signed) {
+      return next(AppError.badRequest("El albarán ya está firmado"));
+    }
+
+    if (!req.file) {
+      return next(AppError.badRequest("Debes subir una imagen de firma"));
+    }
+
+    const signatureUpload = await cloudinaryService.uploadBuffer(req.file.buffer, {
+      folder: "bildyapp/signatures",
+      publicId: `signature-${deliveryNote._id}-${Date.now()}`,
+      resourceType: "image",
+    });
+
+    deliveryNote.signed = true;
+    deliveryNote.signedAt = new Date();
+    deliveryNote.signatureUrl = signatureUpload.secure_url;
+
+    const pdfBuffer = await generateDeliveryNotePdfBuffer(deliveryNote);
+
+    const pdfUpload = await cloudinaryService.uploadBuffer(pdfBuffer, {
+      folder: "bildyapp/pdfs",
+      publicId: `deliverynote-${deliveryNote._id}-${Date.now()}`,
+      resourceType: "raw",
+    });
+
+    deliveryNote.pdfUrl = pdfUpload.secure_url || pdfUpload.url || "";
+    await deliveryNote.save();
+
+    res.json({
+      message: "Albarán firmado correctamente",
+      deliveryNote,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getDeliveryNotePdf(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const deliveryNote = await DeliveryNote.findOne({
+      _id: id,
+      company: req.user.company,
+      deleted: false,
+    })
+      .populate("user", "email name lastName fullName")
+      .populate("client")
+      .populate("project");
+
+    if (!deliveryNote) {
+      return next(AppError.notFound("Albarán no encontrado"));
+    }
+
+    if (deliveryNote.signed && deliveryNote.pdfUrl) {
+      return res.json({
+        message: "PDF disponible",
+        pdfUrl: deliveryNote.pdfUrl,
+      });
+    }
+
+    const pdfBuffer = await generateDeliveryNotePdfBuffer(deliveryNote);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename=deliverynote-${deliveryNote._id}.pdf`
+    );
+
+    return res.send(pdfBuffer);
   } catch (error) {
     next(error);
   }
