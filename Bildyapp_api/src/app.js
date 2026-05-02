@@ -7,6 +7,8 @@ import userRoutes from "./routes/user.routes.js";
 import clientRoutes from "./routes/client.routes.js";
 import projectRoutes from "./routes/project.routes.js";
 import deliveryNoteRoutes from "./routes/deliverynote.routes.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./docs/swagger.js";
 
 const app = express();
 
@@ -32,6 +34,8 @@ app.use("/api/client", clientRoutes);
 app.use("/api/project", projectRoutes);
 // Monto la ruta para el uso de albaranes
 app.use("/api/deliverynote", deliveryNoteRoutes);
+// Monto la ruta para el uso de Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
   res.json({ message: "BildyApp API running" });
