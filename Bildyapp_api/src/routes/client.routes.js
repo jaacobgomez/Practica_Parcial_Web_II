@@ -82,7 +82,7 @@ router.post("/", validate(createClientSchema), createClient);
  *       401:
  *         description: No autorizado
  */
-router.get("/", validate(clientIdSchema), getClients);
+router.get("/", validate(listClientsSchema), getClients);
 
 /**
  * @openapi

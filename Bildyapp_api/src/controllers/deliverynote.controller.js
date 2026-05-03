@@ -5,6 +5,7 @@ import AppError from "../utils/AppError.js";
 import PDFDocument from "pdfkit";
 import { PassThrough } from "node:stream";
 import cloudinaryService from "../services/cloudinary.service.js";
+import { getIo } from "../services/socket.service.js";
 
 export async function createDeliveryNote(req, res, next) {
   try {
@@ -73,6 +74,18 @@ export async function createDeliveryNote(req, res, next) {
       hours: hours ?? 0,
       workers: workers || [],
     });
+
+    const io = getIo();
+
+    if (io) {
+      io.emit("deliverynote:created", {
+        id: deliveryNote._id,
+        format: deliveryNote.format,
+        project: deliveryNote.project,
+        client: deliveryNote.client,
+        signed: deliveryNote.signed,
+      });
+    }
 
     res.status(201).json({
       message: "Albarán creado correctamente",
@@ -317,6 +330,17 @@ export async function signDeliveryNote(req, res, next) {
 
     deliveryNote.pdfUrl = pdfUpload.secure_url || pdfUpload.url || "";
     await deliveryNote.save();
+
+    const io = getIo();
+
+    if (io) {
+      io.emit("deliverynote:signed", {
+        id: deliveryNote._id,
+        signed: deliveryNote.signed,
+        signedAt: deliveryNote.signedAt,
+        pdfUrl: deliveryNote.pdfUrl,
+      });
+    }
 
     res.json({
       message: "Albarán firmado correctamente",
